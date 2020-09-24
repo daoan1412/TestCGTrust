@@ -15,6 +15,8 @@ describe('Product', () => {
     let token;
 
     const productName = faker.lorem.words();
+    let productId;
+    let founder;
 
     describe('/Post register', () => {
         it('it should POST username, password, profile', (done) => {
@@ -92,6 +94,52 @@ describe('Product', () => {
                     res.body.should.have.nested.property("message.context.id");
                     res.body.should.have.nested.property("message.context.tensanpham").eql(productName);
                     res.body.should.have.nested.property("message.context.nhasanxuat");
+                    res.body.should.have.nested.property("message.context.thoigian").eql(dt.toISOString());
+                    res.body.should.have.nested.property("message.context.diadiem").eql(address);
+                    res.body.should.have.nested.property("message.context.toado").eql(latitude + "," + longitude);
+                    res.body.should.have.nested.property("message.context.mota").eql(description);
+                    res.body.should.have.nested.property("message.context.trangthai").eql(status);
+                    res.body.should.have.nested.property("message.context.hashvalue");
+                    res.body.should.have.nested.property("message.context.HashValueOffchain");
+                    // res.body.should.have.nested.property("message.context.hashpbs");
+                    // res.body.should.have.nested.property("message.context.HashPb");
+                    productId = res.body.message.context.id;
+                    founder = res.body.message.context.nhasanxuat;
+                    done();
+                });
+        });
+    });
+
+    describe('/Post update product', () => {
+        it('it should POST product info', (done) => {
+            let dt = new Date();
+            dt.setDate( dt.getDate() - 5 );
+            let address = faker.address.streetAddress();
+            let latitude = faker.address.latitude();
+            let longitude = faker.address.longitude();
+            let description = faker.lorem.sentences();
+            let status = faker.lorem.words(2);
+            let uuid = faker.random.uuid();
+
+            chai.request(domain)
+                .post('/contract/update')
+                .set('Authorization', 'bearer ' + token)
+                .send({
+                    "id": productId ,
+                    "nhasanxuat": founder,
+                    "thoigian": dt.toISOString(),
+                    "diadiem": address,
+                    "toado": latitude + "," +longitude,
+                    "mota": description,
+                    "trangthai": status,
+                    "formIDmoinhat": uuid,
+                })
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.have.property("success").eql(true);
+                    res.body.should.have.nested.property("message.context.id");
+                    res.body.should.have.nested.property("message.context.tensanpham").eql(productName);
+                    res.body.should.have.nested.property("message.context.nhasanxuat").eql(founder);
                     res.body.should.have.nested.property("message.context.thoigian").eql(dt.toISOString());
                     res.body.should.have.nested.property("message.context.diadiem").eql(address);
                     res.body.should.have.nested.property("message.context.toado").eql(latitude + "," + longitude);
