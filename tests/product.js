@@ -65,10 +65,30 @@ describe('Product', () => {
         });
     });
 
+    describe('/Post create images, video desc', () => {
+        let formId = faker.random.uuid();
+        it('it should POST images, video', (done) => {
+            chai.request(domain)
+                .post('/offchain/uploadDescriptions')
+                .set('Authorization', 'bearer ' + token)
+                .attach('descriptions', fs.readFileSync('assets/avatar5.png'), 'avatar.png')
+                .field("formID", formId)
+                .field("contentType", "image")
+                .field("width", 1200)
+                .field("height", 720)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.have.property("success").eql(true);
+                    res.body.should.have.nested.property("message.success").eql(true);
+                    done();
+                });
+        });
+    });
+
     describe('/Post create product', () => {
         it('it should POST product info', (done) => {
             let dt = new Date();
-            dt.setDate( dt.getDate() - 10 );
+            dt.setDate(dt.getDate() - 10);
             let address = faker.address.streetAddress();
             let latitude = faker.address.latitude();
             let longitude = faker.address.longitude();
@@ -101,8 +121,8 @@ describe('Product', () => {
                     res.body.should.have.nested.property("message.context.trangthai").eql(status);
                     res.body.should.have.nested.property("message.context.hashvalue");
                     res.body.should.have.nested.property("message.context.HashValueOffchain");
-                    // res.body.should.have.nested.property("message.context.hashpbs");
-                    // res.body.should.have.nested.property("message.context.HashPb");
+                    res.body.should.have.nested.property("message.context.hashpbs");
+                    res.body.should.have.nested.property("message.context.HashPb");
                     productId = res.body.message.context.id;
                     founder = res.body.message.context.nhasanxuat;
                     done();
@@ -113,7 +133,7 @@ describe('Product', () => {
     describe('/Post update product', () => {
         it('it should POST product info', (done) => {
             let dt = new Date();
-            dt.setDate( dt.getDate() - 5 );
+            dt.setDate(dt.getDate() - 5);
             let address = faker.address.streetAddress();
             let latitude = faker.address.latitude();
             let longitude = faker.address.longitude();
@@ -125,11 +145,11 @@ describe('Product', () => {
                 .post('/contract/update')
                 .set('Authorization', 'bearer ' + token)
                 .send({
-                    "id": productId ,
+                    "id": productId,
                     "nhasanxuat": founder,
                     "thoigian": dt.toISOString(),
                     "diadiem": address,
-                    "toado": latitude + "," +longitude,
+                    "toado": latitude + "," + longitude,
                     "mota": description,
                     "trangthai": status,
                     "formIDmoinhat": uuid,
