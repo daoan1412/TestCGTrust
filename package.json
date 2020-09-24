@@ -1,0 +1,17 @@
+{
+  "name": "testcgtrust",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha 'tests/**/*.js' --recursive --timeout 10000"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "faker": "^5.1.0",
+    "mocha": "^8.1.3"
+  }
+}
